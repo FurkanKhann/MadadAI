@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, session, render_template
 from auth.routes import auth_bp
 from invoice.routes import invoice_bp
+import os
 
 app = Flask(__name__)
 app.secret_key = "madad-ai-invoice-system-2025"

@@ -116,8 +116,8 @@
                         <tr class="border-b-2 border-gray-200">
                             <th class="text-left py-3 text-sm font-medium text-gray-900">ITEM DESCRIPTION</th>
                             <th class="text-center py-3 text-sm font-medium text-gray-900">QTY</th>
-                            <th class="text-right py-3 text-sm font-medium text-gray-900">UNIT PRICE</th>
-                            <th class="text-right py-3 text-sm font-medium text-gray-900">AMOUNT</th>
+                            <th class="text-right py-3 text-sm font-medium text-gray-900">UNIT PRICE (₹)</th>
+                            <th class="text-right py-3 text-sm font-medium text-gray-900">AMOUNT (₹)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,8 +128,8 @@
                         <tr class="border-b border-gray-100">
                             <td class="py-3 text-sm text-gray-900">{{ item.description }}</td>
                             <td class="py-3 text-sm text-gray-600 text-center">{{ item.quantity }}</td>
-                            <td class="py-3 text-sm text-gray-600 text-right">${{ "%.2f"|format(item.unit_price or 0) }}</td>
-                            <td class="py-3 text-sm font-medium text-gray-900 text-right">${{ "%.2f"|format(price) }}</td>
+                            <td class="py-3 text-sm text-gray-600 text-right">₹{{ "%.2f"|format(item.unit_price or 0) }}</td>
+                            <td class="py-3 text-sm font-medium text-gray-900 text-right">₹{{ "%.2f"|format(price) }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -142,16 +142,16 @@
                     <div class="bg-gray-50 p-4 rounded-lg space-y-2">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Subtotal:</span>
-                            <span class="font-medium">${{ "%.2f"|format(net) }}</span>
+                            <span class="font-medium">₹{{ "%.2f"|format(net) }}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Tax Amount:</span>
-                            <span class="font-medium">${{ "%.2f"|format(invoice.tax_amount or 0) }}</span>
+                            <span class="font-medium">₹{{ "%.2f"|format(invoice.tax_amount or 0) }}</span>
                         </div>
                         <div class="border-t border-gray-300 pt-2">
                             <div class="flex justify-between text-lg font-bold">
                                 <span>Total:</span>
-                                <span class="text-primary-600">${{ "%.2f"|format(invoice.total_amount or 0) }}</span>
+                                <span class="text-primary-600">₹{{ "%.2f"|format(invoice.total_amount or 0) }}</span>
                             </div>
                         </div>
                     </div>
@@ -165,6 +165,12 @@
                     Payment is due within 30 days of the invoice date. Late payments may be subject to a 1.5% monthly service charge. 
                     Thank you for your business!
                 </p>
+                <div class="mt-4 text-center">
+                    <p class="text-xs text-gray-500 italic">
+                        <i class="fas fa-brain mr-1"></i>
+                        Powered by Madad AI - Your AI Business Partner
+                    </p>
+                </div>
             </div>
         </div>
     </div>

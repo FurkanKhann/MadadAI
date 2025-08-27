@@ -110,7 +110,7 @@ def new_invoice():
                 pass
         
         tax_amount = round(subtotal * (tax_rate / 100.0), 2)
-        total_amount = round(subtotal + tax_amount, 2)
+        total_amount = round((subtotal + tax_amount) * 100, 2)  # Convert to Rs.
         
         invoice_number = request.form.get("invoice_number") or f"INV-{str(uuid.uuid4())[:8].upper()}"
         today = date.today()

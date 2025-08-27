@@ -38,7 +38,7 @@ def login():
                 session["user_email"] = email
                 session["user_id"] = res.user.id
                 flash("Welcome back to Madad AI!", "success")
-                return redirect(url_for("invoice.dashboard"))
+                return redirect(url_for("dashboard"))
             else:
                 flash("Invalid credentials.", "error")
         except Exception as e:

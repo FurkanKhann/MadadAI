@@ -11,6 +11,10 @@ app.register_blueprint(invoice_bp, url_prefix="/invoice")
 
 @app.route("/")
 def home():
+    return redirect(url_for("dashboard"))
+
+@app.route("/dashboard")
+def dashboard():
     # Check if user is logged in
     if session.get("user_id"):
         return render_template("main_dashboard.html", title="Madad AI - Dashboard")

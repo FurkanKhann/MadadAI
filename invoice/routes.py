@@ -33,13 +33,13 @@ def dashboard():
     
     invoices = (
         supabase.table("invoices")
-        .select("id, invoice_number, client_name, total_amount, date_issued, due_date")
+        .select("id, invoice_number, client_name, total_amount, date_issued, due_date, status")
         .in_("company_id", [company_row["id"]] if company_row else ["00000000-0000-0000-0000-000000000000"])
         .order("date_issued", desc=True)
         .execute()
     )
     
-    return render_template("invoice_dashboard.html", company=company_row, invoices=invoices.data)
+    return render_template("invoice_dashboard.html", company=company_row, invoices=invoices.data, title="Invoice Management - Madad AI")
 
 # ---- Company Profile ----
 @invoice_bp.route("/company", methods=["GET", "POST"])
@@ -47,12 +47,12 @@ def company_profile():
     redirect_resp = require_login()
     if redirect_resp:
         return redirect_resp
-    
+
     existing = (
         supabase.table("companies").select("*").eq("user_id", current_user_id()).limit(1).execute()
     )
     company = existing.data[0] if existing.data else None
-    
+
     if request.method == "POST":
         payload = {
             "user_id": current_user_id(),
@@ -65,7 +65,7 @@ def company_profile():
             "smtp_server": request.form.get("smtp_server", "smtp.gmail.com"),
             "smtp_port": int(request.form.get("smtp_port", 587)),
         }
-        
+
         if company:
             supabase.table("companies").update(payload).eq("id", company["id"]).execute()
             flash("Company profile updated successfully!", "success")
@@ -73,10 +73,10 @@ def company_profile():
             supabase.table("companies").insert(payload).execute()
             flash("Company profile created successfully!", "success")
         return redirect(url_for("invoice.dashboard"))
-    
+
     return render_template("company_form.html", company=company)
 
-# ---- Create Invoice ----
+# ---- Create Invoice ---- (Updated for manual tax amount)
 @invoice_bp.route("/new", methods=["GET", "POST"])
 def new_invoice():
     redirect_resp = require_login()
@@ -100,7 +100,9 @@ def new_invoice():
         client_name = request.form.get("client_name")
         client_email = request.form.get("client_email")
         client_address = request.form.get("client_address")
-        tax_rate = float(request.form.get("tax_rate", 0) or 0)
+        
+        # Changed: Now using manual tax amount instead of rate
+        tax_amount = float(request.form.get("tax_amount", 0) or 0)
         
         subtotal = 0.0
         for q, p in zip(items_qty, items_price):
@@ -109,14 +111,14 @@ def new_invoice():
             except ValueError:
                 pass
         
-        tax_amount = round(subtotal * (tax_rate / 100.0), 2)
-        total_amount = round((subtotal + tax_amount) * 100, 2)  # Convert to Rs.
+        # Calculate total: subtotal + manual tax amount
+        total_amount = round(subtotal + tax_amount, 2)
         
         invoice_number = request.form.get("invoice_number") or f"INV-{str(uuid.uuid4())[:8].upper()}"
         today = date.today()
         due = today + timedelta(days=30)
         
-        # Insert invoice
+        # Insert invoice with tax_amount instead of tax_rate
         inv_res = supabase.table("invoices").insert({
             "company_id": company["id"],
             "client_name": client_name,
@@ -125,8 +127,9 @@ def new_invoice():
             "invoice_number": invoice_number,
             "date_issued": today.isoformat(),
             "due_date": due.isoformat(),
-            "tax_rate": tax_rate,
+            "tax_amount": tax_amount,  # Store tax amount instead of rate
             "total_amount": total_amount,
+            "status": "pending"  # Default status
         }).execute()
         
         invoice_id = inv_res.data[0]["id"]
@@ -172,6 +175,54 @@ def view_invoice(invoice_id: str):
     except Exception as e:
         flash("Invoice not found.", "error")
         return redirect(url_for("invoice.dashboard"))
+
+# ---- Mark as Paid ----
+@invoice_bp.route("/mark_paid/<invoice_id>", methods=["POST"])
+def mark_as_paid(invoice_id: str):
+    redirect_resp = require_login()
+    if redirect_resp:
+        return redirect_resp
+    
+    try:
+        # Update invoice status to 'paid'
+        supabase.table("invoices").update({
+            "status": "paid",
+            "paid_date": date.today().isoformat()
+        }).eq("id", invoice_id).execute()
+        
+        flash("Invoice marked as paid successfully!", "success")
+    except Exception as e:
+        flash(f"Error updating invoice status: {str(e)}", "error")
+    
+    return redirect(url_for("invoice.view_invoice", invoice_id=invoice_id))
+
+# ---- Delete Invoice ---- (Only for paid invoices)
+@invoice_bp.route("/delete/<invoice_id>", methods=["POST"])
+def delete_invoice(invoice_id: str):
+    redirect_resp = require_login()
+    if redirect_resp:
+        return redirect_resp
+    
+    try:
+        # First check if invoice is paid
+        inv = supabase.table("invoices").select("status").eq("id", invoice_id).single().execute()
+        
+        if inv.data["status"] != "paid":
+            flash("Only paid invoices can be deleted.", "error")
+            return redirect(url_for("invoice.view_invoice", invoice_id=invoice_id))
+        
+        # Delete invoice items first (due to foreign key constraint)
+        supabase.table("invoice_items").delete().eq("invoice_id", invoice_id).execute()
+        
+        # Delete the invoice
+        supabase.table("invoices").delete().eq("id", invoice_id).execute()
+        
+        flash("Invoice deleted successfully!", "success")
+        return redirect(url_for("invoice.dashboard"))
+        
+    except Exception as e:
+        flash(f"Error deleting invoice: {str(e)}", "error")
+        return redirect(url_for("invoice.view_invoice", invoice_id=invoice_id))
 
 # ---- Send Invoice Email ----
 @invoice_bp.route("/send_email/<invoice_id>", methods=["POST"])

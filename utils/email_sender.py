@@ -71,14 +71,14 @@ def get_email_template(invoice_data: dict, company_data: dict) -> str:
         <div class="invoice-details">
             <p>Dear {invoice_data.get('client_name', 'Client')},</p>
             
-            <p>Please find attached your invoice for the amount of <strong>${invoice_data.get('total_amount', '0.00')}</strong>.</p>
+            <p>Please find attached your invoice for the amount of <strong>Rs. {invoice_data.get('total_amount', '0.00')}</strong>.</p>
             
             <p><strong>Invoice Details:</strong></p>
             <ul>
                 <li>Invoice Number: {invoice_data.get('invoice_number', 'N/A')}</li>
                 <li>Date Issued: {invoice_data.get('date_issued', 'N/A')}</li>
                 <li>Due Date: {invoice_data.get('due_date', 'N/A')}</li>
-                <li>Total Amount: ${invoice_data.get('total_amount', '0.00')}</li>
+                <li>Total Amount: Rs. {invoice_data.get('total_amount', '0.00')}</li>
             </ul>
             
             <p>Payment is due by {invoice_data.get('due_date', 'the due date')}. Please remit payment at your earliest convenience.</p>

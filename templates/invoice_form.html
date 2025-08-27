@@ -1,59 +1,116 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
-  <h1 class="text-xl font-bold mb-4">New Invoice</h1>
-  <form method="post" id="invoice-form" class="space-y-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <input class="border p-2 rounded" name="client_name" placeholder="Client Name" required>
-      <input class="border p-2 rounded" name="client_email" placeholder="Client Email" required>
-      <input class="md:col-span-2 border p-2 rounded" name="client_address" placeholder="Client Address">
-      <input class="border p-2 rounded" name="invoice_number" placeholder="Invoice # (optional)">
-      <input class="border p-2 rounded" name="tax_rate" placeholder="Tax %" value="10">
-    </div>
-    
-    <div class="mt-4">
-      <h2 class="font-semibold mb-2">Items</h2>
-      <table class="w-full" id="items-table">
-        <thead>
-          <tr class="text-left border-b">
-            <th class="p-2">Description</th>
-            <th class="p-2">Qty</th>
-            <th class="p-2">Unit Price</th>
-            <th class="p-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="p-2"><input class="w-full border p-2 rounded" name="item_desc" placeholder="Item description" required></td>
-            <td class="p-2"><input class="w-full border p-2 rounded" name="quantity" type="number" min="1" value="1" required></td>
-            <td class="p-2"><input class="w-full border p-2 rounded" name="unit_price" type="number" step="0.01" min="0" value="0" required></td>
-            <td class="p-2"><button type="button" class="text-red-600" onclick="removeRow(this)">Remove</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <button type="button" class="mt-2 bg-gray-800 text-white px-3 py-1 rounded" onclick="addRow()">+ Add Item</button>
-    </div>
-    
-    <div class="pt-4">
-      <button class="bg-black text-white px-4 py-2 rounded">Create Invoice</button>
-    </div>
-  </form>
+    <h1 class="text-xl font-bold mb-4">New Invoice</h1>
+    <form method="post" id="invoice-form" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input class="border p-2 rounded" name="client_name" placeholder="Client Name" required>
+            <input class="border p-2 rounded" name="client_email" placeholder="Client Email" required>
+            <input class="md:col-span-2 border p-2 rounded" name="client_address" placeholder="Client Address">
+            <input class="border p-2 rounded" name="invoice_number" placeholder="Invoice # (optional)">
+            <!-- Changed: Tax Amount instead of Tax Rate -->
+            <div>
+                <input class="border p-2 rounded w-full" name="tax_amount" type="number" step="0.01" min="0" value="0" placeholder="Tax Amount ($)" id="tax_amount">
+                <p class="text-xs text-gray-500 mt-1">Enter tax amount in dollars (e.g., 50.00)</p>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h2 class="font-semibold mb-2">Items</h2>
+            <table class="w-full" id="items-table">
+                <thead>
+                    <tr class="text-left border-b">
+                        <th class="p-2">Description</th>
+                        <th class="p-2">Qty</th>
+                        <th class="p-2">Unit Price ($)</th>
+                        <th class="p-2">Total</th>
+                        <th class="p-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="p-2"><input class="w-full border p-2 rounded" name="item_desc" placeholder="Item description" required></td>
+                        <td class="p-2"><input class="w-full border p-2 rounded quantity" name="quantity" type="number" min="1" value="1" required onchange="calculateTotal()"></td>
+                        <td class="p-2"><input class="w-full border p-2 rounded unit-price" name="unit_price" type="number" step="0.01" min="0" value="0" required onchange="calculateTotal()"></td>
+                        <td class="p-2"><span class="line-total font-medium">$0.00</span></td>
+                        <td class="p-2"><button type="button" class="text-red-600" onclick="removeRow(this)">Remove</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="mt-2 bg-gray-800 text-white px-3 py-1 rounded" onclick="addRow()">+ Add Item</button>
+        </div>
+        
+        <!-- Invoice Summary -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="text-right">
+                    <p>Subtotal:</p>
+                    <p>Tax Amount:</p>
+                    <p class="font-bold text-lg">Total:</p>
+                </div>
+                <div>
+                    <p id="subtotal-display">$0.00</p>
+                    <p id="tax-display">$0.00</p>
+                    <p class="font-bold text-lg" id="total-display">$0.00</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pt-4">
+            <button class="bg-black text-white px-4 py-2 rounded">Create Invoice</button>
+        </div>
+    </form>
 </div>
 
 <script>
 function addRow(){
-  const tbody = document.querySelector('#items-table tbody');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td class="p-2"><input class="w-full border p-2 rounded" name="item_desc" placeholder="Item description" required></td>
-    <td class="p-2"><input class="w-full border p-2 rounded" name="quantity" type="number" min="1" value="1" required></td>
-    <td class="p-2"><input class="w-full border p-2 rounded" name="unit_price" type="number" step="0.01" min="0" value="0" required></td>
-    <td class="p-2"><button type="button" class="text-red-600" onclick="removeRow(this)">Remove</button></td>`;
-  tbody.appendChild(tr);
+    const tbody = document.querySelector('#items-table tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="p-2"><input class="w-full border p-2 rounded" name="item_desc" placeholder="Item description" required></td>
+        <td class="p-2"><input class="w-full border p-2 rounded quantity" name="quantity" type="number" min="1" value="1" required onchange="calculateTotal()"></td>
+        <td class="p-2"><input class="w-full border p-2 rounded unit-price" name="unit_price" type="number" step="0.01" min="0" value="0" required onchange="calculateTotal()"></td>
+        <td class="p-2"><span class="line-total font-medium">$0.00</span></td>
+        <td class="p-2"><button type="button" class="text-red-600" onclick="removeRow(this)">Remove</button></td>`;
+    tbody.appendChild(tr);
+    calculateTotal();
 }
 
 function removeRow(btn){ 
-  btn.closest('tr').remove(); 
+    btn.closest('tr').remove(); 
+    calculateTotal();
 }
+
+function calculateTotal() {
+    let subtotal = 0;
+    
+    // Calculate subtotal from all items
+    const rows = document.querySelectorAll('#items-table tbody tr');
+    rows.forEach(row => {
+        const qty = parseFloat(row.querySelector('.quantity').value) || 0;
+        const price = parseFloat(row.querySelector('.unit-price').value) || 0;
+        const lineTotal = qty * price;
+        
+        row.querySelector('.line-total').textContent = '$' + lineTotal.toFixed(2);
+        subtotal += lineTotal;
+    });
+    
+    // Get tax amount
+    const taxAmount = parseFloat(document.getElementById('tax_amount').value) || 0;
+    
+    // Calculate total
+    const total = subtotal + taxAmount;
+    
+    // Update displays
+    document.getElementById('subtotal-display').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('tax-display').textContent = '$' + taxAmount.toFixed(2);
+    document.getElementById('total-display').textContent = '$' + total.toFixed(2);
+}
+
+// Add event listener for tax amount input
+document.getElementById('tax_amount').addEventListener('input', calculateTotal);
+
+// Calculate total on page load
+document.addEventListener('DOMContentLoaded', calculateTotal);
 </script>
 {% endblock %}

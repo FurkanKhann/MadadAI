@@ -26,7 +26,6 @@
         </div>
     </div>
 
-    <!-- Rest of your current dashboard content -->
     <!-- Company Setup Alert -->
     {% if not company %}
     <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
@@ -50,7 +49,7 @@
     {% endif %}
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
             <div class="p-5">
                 <div class="flex items-center">
@@ -71,13 +70,13 @@
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <i class="fas fa-dollar-sign text-2xl text-green-600"></i>
+                        <i class="fas fa-clock text-2xl text-yellow-600"></i>
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Amount</dt>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Pending</dt>
                             <dd class="text-lg font-medium text-gray-900">
-                                Rs. {{ "%.2f"|format(invoices|sum(attribute='total_amount') or 0) }}
+                                {{ invoices|selectattr('status', 'equalto', 'pending')|list|length }}
                             </dd>
                         </dl>
                     </div>
@@ -89,12 +88,32 @@
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <i class="fas fa-clock text-2xl text-yellow-600"></i>
+                        <i class="fas fa-check-circle text-2xl text-blue-600"></i>
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Pending</dt>
-                            <dd class="text-lg font-medium text-gray-900">{{ invoices|length }}</dd>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Paid</dt>
+                            <dd class="text-lg font-medium text-gray-900">
+                                {{ invoices|selectattr('status', 'equalto', 'paid')|list|length }}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-rupee-sign text-2xl text-green-600"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Amount</dt>
+                            <dd class="text-lg font-medium text-gray-900">
+                                ₹{{ "%.2f"|format(invoices|sum(attribute='total_amount') or 0) }}
+                            </dd>
                         </dl>
                     </div>
                 </div>
@@ -110,7 +129,9 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Clients</dt>
-                            <dd class="text-lg font-medium text-gray-900">{{ invoices|map(attribute='client_name')|unique|list|length }}</dd>
+                            <dd class="text-lg font-medium text-gray-900">
+                                {{ invoices|map(attribute='client_name')|unique|list|length }}
+                            </dd>
                         </dl>
                     </div>
                 </div>
@@ -144,7 +165,10 @@
                             <i class="fas fa-calendar-times mr-1"></i>Due
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            <i class="fas fa-dollar-sign mr-1"></i>Amount
+                            <i class="fas fa-rupee-sign mr-1"></i>Amount
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <i class="fas fa-info-circle mr-1"></i>Status
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
@@ -167,17 +191,44 @@
                             {{ inv.due_date }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            Rs. {{ "%.2f"|format(inv.total_amount or 0) }}
+                            ₹{{ "%.2f"|format(inv.total_amount or 0) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {% if inv.status == 'paid' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>Paid
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-clock mr-1"></i>Pending
+                                </span>
+                            {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                             <a href="/invoice/view/{{ inv.id }}" class="text-green-600 hover:text-green-700 transition-colors">
                                 <i class="fas fa-eye mr-1"></i>View
                             </a>
+                            {% if inv.status == 'pending' %}
+                                <span class="text-gray-300">|</span>
+                                <form method="post" action="/invoice/mark_paid/{{ inv.id }}" class="inline">
+                                    <button type="submit" class="text-blue-600 hover:text-blue-700 transition-colors">
+                                        <i class="fas fa-check mr-1"></i>Mark Paid
+                                    </button>
+                                </form>
+                            {% elif inv.status == 'paid' %}
+                                <span class="text-gray-300">|</span>
+                                <form method="post" action="/invoice/delete/{{ inv.id }}" class="inline" 
+                                      onsubmit="return confirm('Are you sure you want to delete this paid invoice? This action cannot be undone.')">
+                                    <button type="submit" class="text-red-600 hover:text-red-700 transition-colors">
+                                        <i class="fas fa-trash mr-1"></i>Delete
+                                    </button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                             <i class="fas fa-file-invoice text-4xl mb-4 text-green-600"></i>
                             <p class="text-lg">No invoices yet</p>
                             <p class="text-sm">Create your first invoice to get started</p>
@@ -190,6 +241,67 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Recent Activity -->
+        <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-chart-line mr-2 text-green-600"></i>
+                Invoice Summary
+            </h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Total Invoices:</span>
+                    <span class="font-medium">{{ invoices|length }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Pending Amount:</span>
+                    <span class="font-medium text-yellow-600">
+                        ₹{{ "%.2f"|format(invoices|selectattr('status', 'equalto', 'pending')|sum(attribute='total_amount') or 0) }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Paid Amount:</span>
+                    <span class="font-medium text-green-600">
+                        ₹{{ "%.2f"|format(invoices|selectattr('status', 'equalto', 'paid')|sum(attribute='total_amount') or 0) }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center border-t pt-2">
+                    <span class="text-sm font-medium text-gray-900">Total Revenue:</span>
+                    <span class="font-bold text-green-600">
+                        ₹{{ "%.2f"|format(invoices|sum(attribute='total_amount') or 0) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-bolt mr-2 text-green-600"></i>
+                Quick Actions
+            </h3>
+            <div class="space-y-3">
+                <a href="/invoice/new" class="flex items-center p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                    <i class="fas fa-plus text-green-600 mr-3"></i>
+                    <span class="font-medium text-green-700">Create New Invoice</span>
+                </a>
+                <a href="/invoice/company" class="flex items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                    <i class="fas fa-building text-blue-600 mr-3"></i>
+                    <span class="font-medium text-blue-700">Update Company Profile</span>
+                </a>
+                {% if invoices|selectattr('status', 'equalto', 'pending')|list %}
+                <div class="flex items-center p-3 bg-yellow-50 rounded-lg">
+                    <i class="fas fa-clock text-yellow-600 mr-3"></i>
+                    <span class="font-medium text-yellow-700">
+                        {{ invoices|selectattr('status', 'equalto', 'pending')|list|length }} Pending Invoice(s)
+                    </span>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

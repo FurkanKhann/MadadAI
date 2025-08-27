@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow">
+  <h1 class="text-xl font-bold mb-4">New Invoice</h1>
+  <form method="post" id="invoice-form" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <input class="border p-2 rounded" name="client_name" placeholder="Client Name" required>
+      <input class="border p-2 rounded" name="client_email" placeholder="Client Email" required>
+      <input class="md:col-span-2 border p-2 rounded" name="client_address" placeholder="Client Address">
+      <input class="border p-2 rounded" name="invoice_number" placeholder="Invoice # (optional)">
+      <input class="border p-2 rounded" name="tax_rate" placeholder="Tax %" value="10">
+    </div>
+    
+    <div class="mt-4">
+      <h2 class="font-semibold mb-2">Items</h2>
+      <table class="w-full" id="items-table">
+        <thead>
+          <tr class="text-left border-b">
+            <th class="p-2">Description</th>
+            <th class="p-2">Qty</th>
+            <th class="p-2">Unit Price</th>
+            <th class="p-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="p-2"><input class="w-full border p-2 rounded" name="item_desc" placeholder="Item description" required></td>
+            <td class="p-2"><input class="w-full border p-2 rounded" name="quantity" type="number" min="1" value="1" required></td>
+            <td class="p-2"><input class="w-full border p-2 rounded" name="unit_price" type="number" step="0.01" min="0" value="0" required></td>
+            <td class="p-2"><button type="button" class="text-red-600" onclick="removeRow(this)">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="button" class="mt-2 bg-gray-800 text-white px-3 py-1 rounded" onclick="addRow()">+ Add Item</button>
+    </div>
+    
+    <div class="pt-4">
+      <button class="bg-black text-white px-4 py-2 rounded">Create Invoice</button>
+    </div>
+  </form>
+</div>
+
+<script>
+function addRow(){
+  const tbody = document.querySelector('#items-table tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="p-2"><input class="w-full border p-2 rounded" name="item_desc" placeholder="Item description" required></td>
+    <td class="p-2"><input class="w-full border p-2 rounded" name="quantity" type="number" min="1" value="1" required></td>
+    <td class="p-2"><input class="w-full border p-2 rounded" name="unit_price" type="number" step="0.01" min="0" value="0" required></td>
+    <td class="p-2"><button type="button" class="text-red-600" onclick="removeRow(this)">Remove</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function removeRow(btn){ 
+  btn.closest('tr').remove(); 
+}
+</script>
+{% endblock %}

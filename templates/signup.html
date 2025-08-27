@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-brain text-white text-3xl"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-900">Join Madad AI</h2>
+            <p class="text-sm text-madad-blue font-medium">Your AI Business Partner</p>
+            <p class="mt-4 text-lg text-gray-700">Invoice Management System</p>
+            <p class="mt-2 text-sm text-gray-600">Create your account to get started</p>
+        </div>
+        
+        <div class="bg-white py-8 px-6 shadow-xl rounded-xl border border-gray-200">
+            <form method="post" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-envelope mr-1 text-madad-blue"></i>Email Address
+                    </label>
+                    <input id="email" name="email" type="email" required 
+                           class="appearance-none relative block w-full px-3 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-madad-blue focus:border-madad-blue transition-colors"
+                           placeholder="Enter your email">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-1 text-madad-blue"></i>Password
+                    </label>
+                    <input id="password" name="password" type="password" required
+                           class="appearance-none relative block w-full px-3 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-madad-blue focus:border-madad-blue transition-colors"
+                           placeholder="Create a strong password">
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-madad-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-madad-blue transition-colors">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Create Account
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="/auth/login" class="font-medium text-madad-blue hover:text-blue-700 transition-colors">
+                        Sign in here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

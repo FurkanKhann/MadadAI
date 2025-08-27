@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Action Bar -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-bold text-gray-900 flex items-center">
+                <i class="fas fa-file-invoice mr-2 text-primary-600"></i>
+                Invoice {{ invoice.invoice_number }}
+            </h1>
+            <div class="flex space-x-3">
+                <form method="post" action="/invoice/send_email/{{ invoice.id }}" class="inline">
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Send Email
+                    </button>
+                </form>
+                <button onclick="window.print()" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors flex items-center">
+                    <i class="fas fa-print mr-2"></i>
+                    Print
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Content -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200" id="invoice-content">
+        <div class="p-8">
+            <!-- Header -->
+            <div class="flex items-start justify-between border-b border-gray-200 pb-6 mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ company.company_name }}</h1>
+                    <div class="mt-2 text-sm text-gray-600 space-y-1">
+                        <p>{{ company.address }}</p>
+                        <p>{{ company.email }} • {{ company.phone }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-4xl font-extrabold text-primary-600 mb-2">INVOICE</div>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p><strong>Invoice #:</strong> {{ invoice.invoice_number }}</p>
+                        <p><strong>Date Issued:</strong> {{ invoice.date_issued }}</p>
+                        <p><strong>Due Date:</strong> {{ invoice.due_date }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bill To Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">BILL TO:</h3>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p class="font-medium text-gray-900">{{ invoice.client_name }}</p>
+                        <p>{{ invoice.client_email }}</p>
+                        <p>{{ invoice.client_address }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">PAYMENT DUE:</h3>
+                    <p class="text-lg font-bold text-red-600">{{ invoice.due_date }}</p>
+                </div>
+            </div>
+            
+            <!-- Items Table -->
+            <div class="mb-8">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-3 text-sm font-medium text-gray-900">ITEM DESCRIPTION</th>
+                            <th class="text-center py-3 text-sm font-medium text-gray-900">QTY</th>
+                            <th class="text-right py-3 text-sm font-medium text-gray-900">UNIT PRICE</th>
+                            <th class="text-right py-3 text-sm font-medium text-gray-900">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set net = 0 %}
+                        {% for item in items %}
+                        {% set price = (item.quantity or 0) * (item.unit_price or 0) %}
+                        {% set net = net + price %}
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 text-sm text-gray-900">{{ item.description }}</td>
+                            <td class="py-3 text-sm text-gray-600 text-center">{{ item.quantity }}</td>
+                            <td class="py-3 text-sm text-gray-600 text-right">${{ "%.2f"|format(item.unit_price or 0) }}</td>
+                            <td class="py-3 text-sm font-medium text-gray-900 text-right">${{ "%.2f"|format(price) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Totals -->
+            <div class="flex justify-end">
+                <div class="w-64">
+                    <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Subtotal:</span>
+                            <span class="font-medium">${{ "%.2f"|format(net) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tax ({{ invoice.tax_rate or 0 }}%):</span>
+                            <span class="font-medium">${{ "%.2f"|format((net * (invoice.tax_rate or 0) / 100)) }}</span>
+                        </div>
+                        <div class="border-t border-gray-300 pt-2">
+                            <div class="flex justify-between text-lg font-bold">
+                                <span>Total:</span>
+                                <span class="text-primary-600">${{ "%.2f"|format(invoice.total_amount or 0) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Terms -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-sm font-medium text-gray-900 mb-2">PAYMENT TERMS & CONDITIONS</h3>
+                <p class="text-xs text-gray-600">
+                    Payment is due within 30 days of the invoice date. Late payments may be subject to a 1.5% monthly service charge. 
+                    Thank you for your business!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #invoice-content, #invoice-content * {
+        visibility: visible;
+    }
+    #invoice-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

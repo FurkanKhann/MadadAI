@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="space-y-8">
+    <!-- Welcome Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-sm rounded-lg">
+        <div class="px-8 py-12 text-center">
+            <div class="w-24 h-24 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-brain text-white text-4xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold mb-4">Welcome to Madad AI</h1>
+            <p class="text-blue-100 text-xl mb-2">Your AI Business Partner</p>
+            <p class="text-blue-200 text-sm max-w-2xl mx-auto">
+                Streamline your business operations with our intelligent suite of AI-powered tools designed to boost productivity and efficiency.
+            </p>
+        </div>
+    </div>
+
+    <!-- Apps Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Invoice Management App -->
+        <div class="group cursor-pointer" onclick="window.location.href='/invoice/'">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-file-invoice text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Invoice Management</h3>
+                    <p class="text-gray-600 text-sm mb-4">Create, manage, and send professional invoices with AI-powered automation</p>
+                    <div class="flex justify-center space-x-4 text-xs text-gray-500">
+                        <span><i class="fas fa-check mr-1"></i>Auto Generation</span>
+                        <span><i class="fas fa-check mr-1"></i>Email Integration</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRM App (Coming Soon) -->
+        <div class="group cursor-not-allowed opacity-75">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 relative">
+                <div class="absolute top-4 right-4">
+                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Coming Soon</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-400 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-users text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">CRM System</h3>
+                    <p class="text-gray-600 text-sm mb-4">Manage customer relationships with AI-driven insights and automation</p>
+                    <div class="flex justify-center space-x-4 text-xs text-gray-500">
+                        <span><i class="fas fa-clock mr-1"></i>Lead Tracking</span>
+                        <span><i class="fas fa-clock mr-1"></i>AI Analytics</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics App (Coming Soon) -->
+        <div class="group cursor-not-allowed opacity-75">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 relative">
+                <div class="absolute top-4 right-4">
+                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Coming Soon</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Business Analytics</h3>
+                    <p class="text-gray-600 text-sm mb-4">Get AI-powered insights and predictions for your business growth</p>
+                    <div class="flex justify-center space-x-4 text-xs text-gray-500">
+                        <span><i class="fas fa-clock mr-1"></i>Predictive AI</span>
+                        <span><i class="fas fa-clock mr-1"></i>Smart Reports</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Management App (Coming Soon) -->
+        <div class="group cursor-not-allowed opacity-75">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 relative">
+                <div class="absolute top-4 right-4">
+                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Coming Soon</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-r from-red-400 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tasks text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Project Management</h3>
+                    <p class="text-gray-600 text-sm mb-4">Organize and track projects with AI-assisted planning and scheduling</p>
+                    <div class="flex justify-center space-x-4 text-xs text-gray-500">
+                        <span><i class="fas fa-clock mr-1"></i>AI Planning</span>
+                        <span><i class="fas fa-clock mr-1"></i>Smart Scheduling</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document AI App (Coming Soon) -->
+        <div class="group cursor-not-allowed opacity-75">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 relative">
+                <div class="absolute top-4 right-4">
+                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Coming Soon</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-file-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Document AI</h3>
+                    <p class="text-gray-600 text-sm mb-4">Process and analyze documents with advanced AI technology</p>
+                    <div class="flex justify-center space-x-4 text-xs text-gray-500">
+                        <span><i class="fas fa-clock mr-1"></i>OCR & NLP</span>
+                        <span><i class="fas fa-clock mr-1"></i>Auto Processing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant App (Coming Soon) -->
+        <div class="group cursor-not-allowed opacity-75">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 relative">
+                <div class="absolute top-4 right-4">
+                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Coming Soon</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-r from-teal-400 to-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-robot text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">AI Assistant</h3>
+                    <p class="text-gray-600 text-sm mb-4">Your intelligent business assistant for daily tasks and decision making</p>
+                    <div class="flex justify-center space-x-4 text-xs text-gray-500">
+                        <span><i class="fas fa-clock mr-1"></i>Smart Chat</span>
+                        <span><i class="fas fa-clock mr-1"></i>Task Automation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <h3 class="text-xl font-bold text-gray-900 mb-6 text-center">Your Business at a Glance</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-green-600">1</div>
+                <div class="text-sm text-gray-600">Active Apps</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600">5</div>
+                <div class="text-sm text-gray-600">Coming Soon</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600">24/7</div>
+                <div class="text-sm text-gray-600">AI Support</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-orange-600">∞</div>
+                <div class="text-sm text-gray-600">Possibilities</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.group:hover .group-hover\:scale-105 {
+    transform: scale(1.05);
+}
+</style>
+{% endblock %}

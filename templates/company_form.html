@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                <i class="fas fa-building mr-3 text-primary-600"></i>
+                Company Profile
+            </h1>
+            <p class="text-sm text-gray-600 mt-1">Configure your company information and email settings</p>
+        </div>
+        
+        <form method="post" class="p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Company Information -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-medium text-gray-900 flex items-center border-b border-gray-200 pb-2">
+                        <i class="fas fa-info-circle mr-2 text-primary-600"></i>
+                        Company Information
+                    </h3>
+                    
+                    <div>
+                        <label for="company_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-building mr-1"></i>Company Name *
+                        </label>
+                        <input type="text" id="company_name" name="company_name" required
+                               value="{{ company.company_name if company }}" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                               placeholder="Enter your company name">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-1"></i>Business Email *
+                        </label>
+                        <input type="email" id="email" name="email" required
+                               value="{{ company.email if company }}" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                               placeholder="business@company.com">
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-phone mr-1"></i>Phone Number
+                        </label>
+                        <input type="tel" id="phone" name="phone"
+                               value="{{ company.phone if company }}" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                               placeholder="+1 (555) 123-4567">
+                    </div>
+                    
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-map-marker-alt mr-1"></i>Business Address
+                        </label>
+                        <textarea id="address" name="address" rows="3"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                  placeholder="123 Business St.&#10;Suite 100&#10;City, State 12345">{{ company.address if company }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Email Configuration -->
+                <div class="space-y-6">
+                    <h3 class="text-lg font-medium text-gray-900 flex items-center border-b border-gray-200 pb-2">
+                        <i class="fas fa-cog mr-2 text-primary-600"></i>
+                        Email Configuration
+                    </h3>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex">
+                            <i class="fas fa-info-circle text-blue-400 mt-0.5 mr-2"></i>
+                            <div class="text-sm text-blue-700">
+                                <p><strong>Email Setup Instructions:</strong></p>
+                                <ul class="mt-2 list-disc list-inside space-y-1">
+                                    <li>Use your business email for sending invoices</li>
+                                    <li>For Gmail: Enable 2FA and use App Password</li>
+                                    <li>For Outlook: Use your regular password</li>
+                                    <li>Your email settings are encrypted and secure</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="smtp_email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-1"></i>SMTP Email Address
+                        </label>
+                        <input type="email" id="smtp_email" name="smtp_email"
+                               value="{{ company.smtp_email if company }}" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                               placeholder="your-email@gmail.com">
+                        <p class="text-xs text-gray-500 mt-1">Email address used for sending invoices</p>
+                    </div>
+                    
+                    <div>
+                        <label for="smtp_password" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-key mr-1"></i>Email Password / App Password
+                        </label>
+                        <input type="password" id="smtp_password" name="smtp_password"
+                               value="{{ company.smtp_password if company }}" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                               placeholder="Your email password or app password">
+                        <p class="text-xs text-gray-500 mt-1">Use App Password for Gmail (recommended)</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="smtp_server" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-server mr-1"></i>SMTP Server
+                            </label>
+                            <select id="smtp_server" name="smtp_server"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                                <option value="smtp.gmail.com" {{ 'selected' if company and company.smtp_server == 'smtp.gmail.com' else '' }}>Gmail</option>
+                                <option value="smtp.outlook.com" {{ 'selected' if company and company.smtp_server == 'smtp.outlook.com' else '' }}>Outlook</option>
+                                <option value="smtp.yahoo.com" {{ 'selected' if company and company.smtp_server == 'smtp.yahoo.com' else '' }}>Yahoo</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="smtp_port" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-plug mr-1"></i>SMTP Port
+                            </label>
+                            <input type="number" id="smtp_port" name="smtp_port"
+                                   value="{{ company.smtp_port if company else 587 }}" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                   placeholder="587">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-8 pt-6 border-t border-gray-200">
+                <button type="submit" class="bg-primary-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors flex items-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Save Company Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
